@@ -131,17 +131,19 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
             first = next;
         } else {
             prev.setNext(next);
-            node.setPrev(null);
         }
 
         if (next == null) {
             last = prev;
         } else {
             next.setPrev(prev);
-            node.setNext(null);
         }
 
+        // always clear removed node's links and item
         node.setItem(null);
+        node.setPrev(null);
+        node.setNext(null);
+
         size--;
         return element;
     }
