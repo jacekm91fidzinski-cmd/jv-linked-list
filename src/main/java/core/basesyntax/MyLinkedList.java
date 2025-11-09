@@ -1,47 +1,160 @@
 package core.basesyntax;
 
+import org.w3c.dom.*;
+
 import java.util.List;
 
 public class MyLinkedList<T> implements MyLinkedListInterface<T> {
+    private int size = 0;
+    private Node<T> first;
+    private Node<T> last;
+
     @Override
     public void add(T value) {
+        Node<T> previousLast = last;
+        Node<T> newNode = new Node<>(previousLast, value, null);
+        last = newNode;
+        if (previousLast == null) {
+            first = newNode;
+        } else {
+            previousLast.next = newNode;
+        }
+        size++;
     }
 
     @Override
     public void add(T value, int index) {
+        checkPositionIndex(index);
+        if (index == size) {
+            add(value);
+            return;
+        }
+        Node<T> succesor = findNodeByIndex(index);
+        Node<T> predecesor = succesor.prev;
+        Node<T> newNode = new Node<>(predecesor, value, succesor);
+        succesor.prev = newNode;
+        if (predecesor == null) {
+            first = newNode;
+        } else {
+            predecesor.next = newNode;
+        }
+        size++;
     }
 
     @Override
     public void addAll(List<T> list) {
+        if (list == null) {
+            throw new NullPointerException("The provided list is null");
+        }
+        for (T item : list) {
+            add(item);
+        }
     }
 
     @Override
     public T get(int index) {
-        return null;
+        checkElementIndex(index);
+        return findNodeByIndex(index).item;
     }
 
     @Override
     public T set(T value, int index) {
-        return null;
+        checkElementIndex(index);
+        Node<T> node= findNodeByIndex(index);
+        T oldValue = node.item;
+        node.item = value;
+        return oldValue;
     }
 
     @Override
     public T remove(int index) {
-        return null;
+        checkElementIndex(index);
+        return unlink(findNodeByIndex(index));
     }
 
     @Override
     public boolean remove(T object) {
+        Node<T> current = first;
+        while (current != null) {
+            if (object == null ? current.item == null : object.equals(current.item)) {
+                unlink(current);
+            }
+            current = current.next;
+        }
         return false;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
+    }
+
+    private void checkElementIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+    }
+
+    private void checkPositionIndex(int index) {
+        if (index < 0 || index <size) {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+    }
+
+    private Node<T> findNodeByIndex(int index) {
+        if (index < (size >> 1)) {
+            Node<T> node = first;
+            for (int i = 0; i < index; i++) {
+                node = node.next;
+            }
+            return node;
+        } else {
+            Node<T> node = last;
+            for (int i = size - 1; i >index; i--) {
+                node = node.prev;
+            }
+            return node;
+        }
+    }
+
+    private T unlink(Node<T> node) {
+        final T element = node.item;
+        final Node<T> prev = node.prev;
+        final Node<T> next = node.next;
+
+        if (prev == null) {
+            first = next;
+        } else {
+            prev.next = next;
+            node.prev = null;
+        }
+
+        if (next == null) {
+            last = prev;
+        } else {
+            next.prev = prev;
+            node.next = null;
+        }
+
+        node.item = null;
+        size--;
+        return element;
+    }
+
+    private static class Node<E> {
+        E item;
+        Node<E> prev;
+        Node<E> next;
+
+        Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.prev = prev;
+            this.next = next;
+        }
     }
 }
