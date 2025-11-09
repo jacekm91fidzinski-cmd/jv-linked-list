@@ -156,5 +156,29 @@ public class MyLinkedList<T> implements MyLinkedListInterface<T> {
             this.prev = prev;
             this.next = next;
         }
+
+        E getItem() {
+            return item;
+        }
+
+        void setItem(E item) {
+            this.item = item;
+        }
+
+        Node<E> getPrev() {
+            return prev;
+        }
+
+        void setPrev(Node<E> prev) {
+            this.prev = prev;
+        }
+
+        Node<E> getNext() {
+            return next;
+        }
+
+        void setNext(Node<E> next) {
+            this.next = next;
+        }
     }
 }
